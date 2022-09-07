@@ -1,22 +1,25 @@
 import express from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import * as bodyParser from 'body-parser';
 
-import { AppRouter } from './routes/routes';
+import { sequelize } from './db/database.connection';
+import { CourseRouter } from './routes/course.routes';
 
 dotenv.config();
 
 const app = express();
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(morgan('dev'));
 
-mongoose.connect(process.env.DB_URL as string, async ()=>{
-    console.log('Database connection successfull')
-});
+sequelize.sync({ alter: true }).then(()=>{
+    console.log('database setup successfully');
+}).catch(err => console.log(err));
 
-app.use('/', AppRouter);
+app.use('/courses', CourseRouter);
 
 app.listen(parseInt(process.env.PORT as string), ()=>{
     console.log(`App started on Port ${process.env.PORT}`)
-}); 
+});
