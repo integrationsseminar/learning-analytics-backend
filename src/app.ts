@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 
 import { sequelize } from './db/database.connection';
 import { CourseRouter } from './routes/course.routes';
+import { PingRouter } from './routes/ping.router';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ sequelize.sync({ alter: true }).then(()=>{
 }).catch(err => console.log(err));
 
 app.use('/courses', CourseRouter);
+app.use('/ping', PingRouter)
 
 app.listen(parseInt(process.env.PORT as string), ()=>{
     console.log(`App started on Port ${process.env.PORT}`)
