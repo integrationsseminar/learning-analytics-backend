@@ -1,5 +1,5 @@
 # backend
-
+**ENV VARS MAINTAINED IN projekt-fitnessapp/infrastruktur ONLY!**
 Test
 
 ### Prerequisite
