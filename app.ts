@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import * as bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import router from './src/routes/routes';
+import errorMiddleware from './src/middleware/error.middleware';
 
 
 dotenv.config();
@@ -20,7 +21,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(morgan('dev'));
 
-app.use("/", router)
+app.use("/", router);
+
+app.use(errorMiddleware)
 
 
 
