@@ -12,8 +12,7 @@ const schema = new Schema<TUserDocument>({
     immutable: true,
     required: true
   },
-  profilePicture: {type: String, required: false},
-  courses: [{type: Schema.Types.ObjectId}]
+  profilePicture: {type: String, required: false}
 },
   {
     toObject: {
@@ -24,15 +23,5 @@ const schema = new Schema<TUserDocument>({
     },
     timestamps: { createdAt: 'createdAt' }
   });
-
-
-//add textIndex for full text search
-/*
-schema.index({
-  firstName: 'text',
-  lastName: 'text',
-  email: 'text'
-})
-*/
 
 export default model<TUserDocument, TUserModel>('User', schema, 'users');
