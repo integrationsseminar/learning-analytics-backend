@@ -32,7 +32,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.0",
     "morgan": "^1.10.0",
-    "odatafy-mongodb": "^0.0.3",
+    "odatafy-mongodb": "^0.0.5",
     "pg": "^8.8.0",
     "sequelize": "^6.21.4"
   },
