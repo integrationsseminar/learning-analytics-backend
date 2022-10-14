@@ -64,7 +64,7 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
 
                 //get base query
                 if(opts?.routeConfigs?.getByIdBaseQuery) {
-                    query = { ...query, ...opts.routeConfigs.getByIdBaseQuery(req) }
+                    query = { ...query, ...await opts.routeConfigs.getByIdBaseQuery(req) }
                 }
 
                 const data = await model.findOne(query);
