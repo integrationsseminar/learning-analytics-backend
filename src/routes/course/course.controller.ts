@@ -6,6 +6,6 @@ import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDContr
 
 const CRUDOpts: CRUDControllerOptions<TCourse, TCourseDocument> = {
     softDelete: true
-} 
+}
 
 export default class CourseController extends BaseCRUDController<TCourse, TCourseDocument, TCourseModel>(Course, CRUDOpts){}
