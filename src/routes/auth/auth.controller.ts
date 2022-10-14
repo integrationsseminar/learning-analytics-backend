@@ -3,6 +3,7 @@ import User from "../../models/user.model"
 import bcrypt from "bcrypt"
 import { UserRoles } from "../../types/user.types";
 import Utils from "../../utils/utils";
+import { Error } from "mongoose";
 
 export default class AuthController {
 
@@ -23,7 +24,7 @@ export default class AuthController {
             res.status(201).send();
 
         } catch (e) {
-            if((<any>e).errors.name.name) {
+            if((<Error.ValidationError>e).errors.name.name) {
                 res.status(400)
             } else {
                 res.status(500)
