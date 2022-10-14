@@ -19,14 +19,13 @@ export default function authMiddleware(allowedRoles: UserRoles[]) {
             const user = jwt.decode(jwtString) as TJWTPayload
 
             if (!allowedRoles.includes(user.role)) {
-                res.status(401)
+                res.status(401);
                 return next(new Error("You shall not pass"))
             }
-
-            (<TRequestWithUser>req)._id = user._id;
+            (<TRequestWithUser>req).user = user;
             next();
-            
-        } catch (_e) {
+
+        } catch (e) {
             res.status(401)
             return next(new Error("You shall not pass"))
         }

@@ -7,4 +7,6 @@ export type TJWTPayload = {
     role: UserRoles
 }
 
-export type TRequestWithUser = Request & TJWTPayload
+export type TRequestWithUser = Request & {
+    user: TJWTPayload
+}
