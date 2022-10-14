@@ -1,7 +1,6 @@
+import { Schema, Document, Model } from "mongoose"
 
-import { Schema } from "mongoose"
 export type TUser = {
-    _id: Schema.Types.ObjectId
     name: string,
     email: string,
     password: string,
@@ -16,3 +15,7 @@ export enum UserRoles {
     Lecturer = "Lecturer",
     Admin = "Admin"
 }
+
+export interface TUserDocument extends TUser, Document {};
+
+export interface TUserModel extends Model<TUserDocument>{};
