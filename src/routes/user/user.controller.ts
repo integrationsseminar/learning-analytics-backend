@@ -3,6 +3,7 @@ import User from '../../models/user.model'
 import {getQueryFromUrl} from "odatafy-mongodb"
 import { PipelineStage } from 'mongoose';
 import { TRequestWithUser } from '../../types/auth.types';
+import { ErrorWithStatus } from '../../errors/errorWithStatus';
 
 export default class UserController {
 
@@ -15,7 +16,6 @@ export default class UserController {
                 count: result.length
             });
         } catch (e) { 
-            res.status(500)
             return next(e) 
         }
     }
@@ -25,7 +25,6 @@ export default class UserController {
             const user = await User.findById((<TRequestWithUser>req).user._id)
             return res.json(user);
         } catch (e) { 
-            res.status(500)
             return next(e) 
         }
     }
@@ -34,12 +33,10 @@ export default class UserController {
         try {
             const user = await User.findOneAndDelete({id: req.params.id}, {});
             if (!user) { 
-                res.status(400);
-                return next(new Error("User not found"));
+                return next(new ErrorWithStatus("User not found", 404));
             }
             return res.status(204).send();
         } catch (e) { 
-            res.status(500);
             return next(e);
         }
     }
@@ -48,12 +45,10 @@ export default class UserController {
         try {
             const user = await User.findOneAndUpdate({_id: (<TRequestWithUser>req).user._id}, req.body, { new: true });
             if (!user) { 
-                res.status(400);
-                return next(new Error("User not found"));
+                return next(new ErrorWithStatus("User not found", 404));
             }
             return res.json(user);
         } catch (e) { 
-            res.status(500)
             return next(e);
         }
     }

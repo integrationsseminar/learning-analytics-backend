@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Model, Document, PipelineStage, FilterQuery } from 'mongoose';
 
 import { getQueryFromUrl } from 'odatafy-mongodb';
+import { ErrorWithStatus } from '../errors/errorWithStatus';
 
 export type CRUDControllerOptions<T, TDocumentType> = {
     softDelete?: boolean,
@@ -68,7 +69,9 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                 }
 
                 const data = await model.findOne(query);
-
+                if(!data) {
+                    return next(new ErrorWithStatus("Document not found", 404))
+                }
                 res.json(data);
             } catch(e) {
                 next(e);
@@ -88,6 +91,10 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                 }
 
                 const data = await model.create(sanitizedBody);
+
+                if(!data) {
+                    return next(new ErrorWithStatus("Document not found", 404))
+                }
 
                 res.json(data);
             } catch(e) {
@@ -126,6 +133,10 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
 
                 const data = await model.findOneAndUpdate(query, sanitizedBody, { new: true });
 
+                if(!data) {
+                    return next(new ErrorWithStatus("Document not found", 404))
+                }
+
                 res.json(data);
             } catch(e) {
                 next(e);
@@ -145,6 +156,11 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
 
                 if(opts?.routeConfigs?.deleteBaseQuery) {
                     query = { ...query, ...await opts.routeConfigs.deleteBaseQuery(req) }
+                }
+
+                let data = model.findOne(query);
+                if(!data) {
+                    return next(new ErrorWithStatus("Document not found", 404))
                 }
 
                 if(opts?.softDelete) {
