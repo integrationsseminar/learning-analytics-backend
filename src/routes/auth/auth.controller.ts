@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../models/user.model"
+import User from "../../models/user.model"
 import bcrypt from "bcrypt"
-import { UserRoles } from "../types/user.types";
-import Utils from "../utils/utils";
+import { UserRoles } from "../../types/user.types";
+import Utils from "../../utils/utils";
 
 export default class AuthController {
 

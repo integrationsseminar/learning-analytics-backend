@@ -1,21 +1,12 @@
 import { Router } from "express";
-import AuthController from "./auth";
-import PingController from "./ping";
-import UserController from "./user";
+import AuthRouter from "./auth/auth.router";
+import PingRouter from "./ping/ping.router";
+import UserRouter from "./user/user.router";
 
 const router = Router();
 
-//Ping Routes
-router.get("/ping", PingController.ping);
-
-//Auth Routes
-router.post("/auth/register", AuthController.registerStudent);
-router.post("/auth/login", AuthController.login);
-
-//User Routes
-router.get("/users", UserController.getUserOdatafy);
-router.get("/users/my", UserController.getLoggedInUser);
-router.put("/users/my", UserController.updateUserById);
-router.delete("/users/:id", UserController.deleteUserById);
+router.use("/auth", AuthRouter);
+router.use("/ping", PingRouter);
+router.use("/users", UserRouter);
 
 export default router
