@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-import {TUser, UserRoles} from "../types/user.types";
+import { UserRoles, TUserDocument, TUserModel } from "../types/user.types";
 
 
-const schema = new Schema<TUser>({
+const schema = new Schema<TUserDocument>({
   name: {type: String, required: true},
   email: {type: String, required: true},
   password: {type: String, required: true, select: false},
@@ -35,4 +35,4 @@ schema.index({
 })
 */
 
-export default model<TUser>('users', schema);
+export default model<TUserDocument, TUserModel>('User', schema, 'users');
