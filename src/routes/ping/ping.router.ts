@@ -4,6 +4,6 @@ import PingController from "./ping.controller";
 const PingRouter = Router();
 
 //Ping Routes
-PingRouter.get("/", PingController.ping);
+PingRouter.get("/" ,PingController.ping);
 
 export default PingRouter
