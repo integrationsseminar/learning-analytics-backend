@@ -10,6 +10,7 @@ const schema = new Schema<TCourseDocument>({
     end: { type: Date, required: true },
     color: { type: String, required: true },
     progressType: { type: String, enum: Object.values(ProgressTypes), default: ProgressTypes.BYDATE },
+    deleted: { type: Boolean, default: false }
 },
   {
     toObject: {

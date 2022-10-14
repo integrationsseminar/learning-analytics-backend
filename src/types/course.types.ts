@@ -12,7 +12,8 @@ export type TCourse = {
     start: Date,
     end: Date,
     color: string,
-    progressType: ProgressTypes
+    progressType: ProgressTypes,
+    deleted: boolean
 }
 
 export interface TCourseDocument extends TCourse, Document {};

@@ -3,7 +3,7 @@ import { Model, Document, PipelineStage, FilterQuery } from 'mongoose';
 
 import { getQueryFromUrl } from 'odatafy-mongodb';
 
-type CRUDControllerOptions<T, TDocumentType> = {
+export type CRUDControllerOptions<T, TDocumentType> = {
     softDelete?: boolean,
     routeConfigs?: {
         getAllBaseQuery?:  (req: Request) => Promise<PipelineStage[]>,
@@ -124,7 +124,7 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                     query = { ...{ deleted: { $ne: true }}, ...query }
                 }
 
-                const data = await model.updateOne(query, sanitizedBody);
+                const data = await model.findOneAndUpdate(query, sanitizedBody, { new: true });
 
                 res.json(data);
             } catch(e) {
@@ -148,7 +148,7 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                 }
 
                 if(opts?.softDelete) {
-                    await model.findOneAndDelete(query, { deleted: true });
+                    await model.findOneAndUpdate(query, { deleted: true });
                 } else {
                     await model.deleteOne(query);
                 }
