@@ -18,4 +18,4 @@ export enum UserRoles {
 
 export interface TUserDocument extends TUser, Document {};
 
-export interface TUserModel extends Model<TUserDocument>{};
+export interface TUserModel extends Model<TUserDocument> {};
