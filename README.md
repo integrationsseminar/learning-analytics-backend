@@ -13,7 +13,7 @@ DB_URL=[Your DB Url]
 ### Commands
 
 Install:
-```
+``` 
 npm install
 ```
 
