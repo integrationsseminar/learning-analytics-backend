@@ -36,10 +36,59 @@ const CRUDOpts: CRUDControllerOptions<TCourse, TCourseDocument> = {
 
             return result;
         },
-        createBaseBody: async (req: Request) => {
-            return {
-                owner: req.user._id
+        getByIdBaseQuery: async (req: Request) => {
+            if(req.user.role == UserRoles.Lecturer) {
+                return {
+                        $or: [
+                            { owner: new Types.ObjectId(req.user._id) },
+                            { members: new Types.ObjectId(req.user._id) }
+                        ]   
+                    }
             }
+
+            if(req.user.role == UserRoles.Student) {
+                return {
+                        members: new Types.ObjectId(req.user._id)
+                    }
+            }
+
+            return {}
+        },
+        createBaseBody: async (req: Request) => {
+            if (req.user.role == UserRoles.Lecturer) {
+                return {
+                    owner: req.user._id
+                }
+            }
+            
+            return {}
+        },
+        updateBaseQuery: async (req: Request) => {
+            if (req.user.role == UserRoles.Lecturer) {
+                return {
+                    owner: req.user._id
+                }
+            }
+            
+            return {}
+        },
+        updateBaseBody: async (req: Request) => {
+            if (req.user.role == UserRoles.Lecturer) {
+                return {
+                    owner: req.user._id
+                }
+            }
+            
+            return {}
+        },
+        deleteBaseQuery: async (req: Request) => {
+            if (req.user.role == UserRoles.Lecturer) {
+                return {
+                    owner: req.user._id
+                }
+            }
+            
+            return {}
         }
     }
 }
