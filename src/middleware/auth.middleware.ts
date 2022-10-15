@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken"
+import { TJWTPayload } from "../types/auth.types";
+import { TUserDocument, UserRoles } from "../types/user.types";
 import { ErrorWithStatus } from "../errors/errorWithStatus";
-import { TJWTPayload, TRequestWithUser } from "../types/auth.types";
-import { UserRoles } from "../types/user.types";
+import User from '../models/user.model';
 
 export default function authMiddleware(allowedRoles: UserRoles[]) {
     return async (req: Request, _res: Response, next: NextFunction) => {
@@ -21,7 +22,7 @@ export default function authMiddleware(allowedRoles: UserRoles[]) {
             if (!allowedRoles.includes(user.role)) {
                 return next(new ErrorWithStatus("You shall not pass", 401))
             }
-            (<TRequestWithUser>req).user = user;
+            req.user = await User.findById(user._id) as TUserDocument;
             next();
 
         } catch (e) {

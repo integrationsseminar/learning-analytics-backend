@@ -1,17 +1,20 @@
 import { Router } from 'express';
 
+import { UserRoles } from '../../types/user.types';
+import authMiddleware from "../../middleware/auth.middleware";
+
 import CourseController from './course.controller';
 
 const router = Router();
 
-router.get('/', CourseController.getAll);
+router.get('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), CourseController.getAll);
 
-router.get('/:id', CourseController.getById);
+router.get('/:id', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), CourseController.getById);
 
-router.post('/', CourseController.create);
+router.post('/', authMiddleware([UserRoles.Lecturer, UserRoles.Admin]), CourseController.create);
 
-router.put('/:id', CourseController.update);
+router.put('/:id', authMiddleware([ UserRoles.Lecturer, UserRoles.Admin]), CourseController.update);
 
-router.delete('/:id', CourseController.delete);
+router.delete('/:id', authMiddleware([UserRoles.Lecturer, UserRoles.Admin]), CourseController.delete);
 
 export default router;
