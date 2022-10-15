@@ -5,6 +5,7 @@ export type TThread = {
     createdBy: Schema.Types.ObjectId
     title: string
     description: string
+    deleted: boolean
 }
 
 export interface TThreadDocument extends TThread, Document {}
