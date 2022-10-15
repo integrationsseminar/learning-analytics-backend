@@ -1,7 +1,7 @@
 import { Router } from "express";
 import AuthRouter from "./auth/auth.router";
 import PingRouter from "./ping/ping.router";
-import UserRouter from "./users/user.router";
+import UserRouter from "./user/user.router";
 import CourseRouter from './course/course.router';
 import ThreadRouter from './threads/thread.router';
 
