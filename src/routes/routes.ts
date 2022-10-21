@@ -6,6 +6,7 @@ import CourseRouter from './course/course.router';
 import ThreadRouter from './threads/thread.router';
 import SurveyRouter from './survey/survey.router';
 import ThreadCommentRouter from './threadcomment/threadcomment.router'
+import ThreadNotificationsRouter from './notification/notification.router'
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/courses', CourseRouter);
 router.use('/threads', ThreadRouter);
 router.use('/surveys', SurveyRouter);
 router.use('/threadcomments', ThreadCommentRouter);
+router.use('/notifications', ThreadNotificationsRouter)
 
 export default router

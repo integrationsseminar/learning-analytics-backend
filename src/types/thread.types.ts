@@ -1,8 +1,10 @@
-import { Schema, Document, Model } from "mongoose"
+import { Document, Model } from "mongoose"
+import { TCourseDocument } from "./course.types"
+import { TUserDocument } from "./user.types"
 
 export type TThread = {
-    course: Schema.Types.ObjectId
-    createdBy: Schema.Types.ObjectId
+    course: TCourseDocument["_id"]
+    createdBy: TUserDocument["_id"]
     title: string
     description: string
     deleted: boolean

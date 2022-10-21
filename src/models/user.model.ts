@@ -24,4 +24,16 @@ const schema = new Schema<TUserDocument>({
     timestamps: { createdAt: 'createdAt' }
   });
 
+  schema.index({
+    email: 1, 
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      deleted: {
+        $ne: true
+      }
+    }
+  })
+
 export default model<TUserDocument, TUserModel>('User', schema, 'users');

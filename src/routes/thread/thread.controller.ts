@@ -4,8 +4,6 @@ import Thread from '../../models/thread.model';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
 import { PipelineStage } from 'mongoose';
-import { TCourseDocument } from '../../types/course.types';
-import { TRequestWithUser } from '../../types/auth.types';
 import { UserRoles } from '../../types/user.types';
 
 const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
@@ -13,13 +11,13 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
     routeConfigs: {
         getAllBaseQuery: async (req) => {
             let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threads = threads.filter((thread) => {
-                    return (<TThreadDocument & { course: TCourseDocument }>thread).course.members.includes(userId)
-                        || (<TThreadDocument & { course: TCourseDocument }>thread).course.owner == userId
+                    return thread.course.members.includes(userId)
+                        || thread.course.owner == userId
                 });
             }
 
@@ -32,13 +30,12 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
 
         getByIdBaseQuery: async (req) => {
             let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threads = threads.filter((thread) => {
-                    return (<TThreadDocument & { course: TCourseDocument }>thread).course.members.includes(userId)
-                        || (<TThreadDocument & { course: TCourseDocument }>thread).course.owner == userId
+                    return thread.course.members.includes(userId) || thread.course.owner == userId
                 })
             }
 
@@ -50,7 +47,7 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
         },
 
         updateBaseQuery: async (req) => {
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             let threads = await Thread.find({}).populate('course', 'members owner')
 
@@ -64,8 +61,7 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
             //Lecturers can change every thread in their own course
             if (role == UserRoles.Lecturer) {
                 threads = threads.filter((thread) => {
-                    return (<TThreadDocument & { course: TCourseDocument }>thread).course.members.includes(userId)
-                        || (<TThreadDocument & { course: TCourseDocument }>thread).course.owner == userId
+                    return thread.course.members.includes(userId) || thread.course.owner == userId
                 })
             }
 
@@ -78,12 +74,12 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
 
         deleteBaseQuery: async (req) => {
             let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId } = (<TRequestWithUser>req).user
+            const { _id: userId } = req.user
 
             //lecturers can only delete threads from their own courses
-            if ((<TRequestWithUser>req).user.role == UserRoles.Lecturer) {
+            if (req.user.role == UserRoles.Lecturer) {
                 threads = threads.filter((thread) => {
-                    return (<TThreadDocument & { course: TCourseDocument }>thread).course.owner == userId
+                    return thread.course.owner == userId
                 })
             }
 
@@ -96,7 +92,7 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
 
         createBaseBody: async (req) => {
             return {
-                createdBy: (<TRequestWithUser>req).user._id
+                createdBy: req.user._id
             }
         },
 
