@@ -10,6 +10,6 @@ router.get('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles
 router.get('/:id', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadController.getById);
 router.post('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadController.create);
 router.put('/:id', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadController.update);
-router.delete('/:id', authMiddleware([UserRoles.Student ,UserRoles.Lecturer, UserRoles.Admin]), ThreadController.delete);
+router.delete('/:id', authMiddleware([UserRoles.Lecturer, UserRoles.Admin]), ThreadController.delete);
 
 export default router;
