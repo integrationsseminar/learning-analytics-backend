@@ -92,6 +92,10 @@ const CRUDOpts: CRUDControllerOptions<TSurvey, TSurveyDocument> = {
 
 export default class SurveyController extends BaseCRUDController<TSurvey, TSurveyDocument, TSurveyModel>(Survey, CRUDOpts) {
     public static async submitSurveyAnswer(req: Request, res: Response, next: NextFunction) {
-        
+        const survey = await Survey.findOne({ _id: req.params.id, deleted: { $ne: true } });
+
+        if(!survey) {
+            return next()
+        }
     }
 }

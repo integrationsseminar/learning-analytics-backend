@@ -5,6 +5,7 @@ import UserRouter from "./user/user.router";
 import CourseRouter from './course/course.router';
 import ThreadRouter from './threads/thread.router';
 import SurveyRouter from './survey/survey.router';
+import ThreadCommentRouter from './threadcomment/threadcomment.router'
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/users", UserRouter);
 router.use('/courses', CourseRouter);
 router.use('/threads', ThreadRouter);
 router.use('/surveys', SurveyRouter);
+router.use('/threadcomments', ThreadCommentRouter);
 
 export default router
