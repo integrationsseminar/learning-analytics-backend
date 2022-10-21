@@ -3,10 +3,12 @@ import { TThreadComment, TThreadCommentDocument, TThreadCommentModel } from '../
 import ThreadComment from '../../models/threadcomment.model';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
-import { PipelineStage } from 'mongoose';
+import {  PipelineStage } from 'mongoose';
 import { TCourseDocument } from '../../types/course.types';
 import { TRequestWithUser } from '../../types/auth.types';
 import { UserRoles } from '../../types/user.types';
+import Utils from '../../utils/utils';
+import { HTTPInternalServerError } from '../../errors/errorWithStatus';
 
 const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = {
 
@@ -90,6 +92,21 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
             return {
                 createdBy: (<TRequestWithUser>req).user._id
             }
+        },
+
+        createPostProc: async (_req, data) => {
+            let threadComment = await ThreadComment.findOne({_id: data._id}).populate({
+                path: 'thread',
+                populate: {
+                    path: 'course',
+                    model: 'Course'
+                }
+            })
+            if(!threadComment) {
+                throw new HTTPInternalServerError("Error in createPostProc of threadcomment controller")
+            }
+            await Utils.createNotification([...threadComment.thread.course.members, ...threadComment.thread.course.owner], `Neuer Kommentar auf einen Thread`, "Es wurde ein neuer Kommentar im Thread mem lal lol erstellt. Bitte einloggen")
+            return data
         },
 
     },

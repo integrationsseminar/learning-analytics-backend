@@ -1,11 +1,13 @@
-import { Schema, Document, Model } from "mongoose"
+import { Document, Model } from "mongoose"
+import { TThreadDocument } from "./thread.types"
+import { TUserDocument } from "./user.types"
 
 export type TThreadComment = {
-    thread: Schema.Types.ObjectId
-    createdBy: Schema.Types.ObjectId
+    thread: TThreadDocument["_id"]
+    createdBy: TUserDocument['_id']
     message: string
 }
 
-export interface TThreadCommentDocument extends TThreadComment, Document {}
+export interface TThreadCommentDocument extends TThreadComment, Document { }
 
-export interface TThreadCommentModel extends Model<TThreadCommentDocument>{}
+export interface TThreadCommentModel extends Model<TThreadCommentDocument> { }

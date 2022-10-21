@@ -1,4 +1,4 @@
-import { Schema, Document, Model } from "mongoose"
+import { Document, Model } from "mongoose"
 
 export type TUser = {
     name: string,
@@ -6,8 +6,6 @@ export type TUser = {
     password: string,
     role: UserRoles,    
     profilePicture?: string
-    courses: Schema.Types.ObjectId[]
-
 }
 
 export enum UserRoles {
