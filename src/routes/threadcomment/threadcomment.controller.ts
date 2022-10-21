@@ -4,8 +4,6 @@ import ThreadComment from '../../models/threadcomment.model';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
 import {  PipelineStage } from 'mongoose';
-import { TCourseDocument } from '../../types/course.types';
-import { TRequestWithUser } from '../../types/auth.types';
 import { UserRoles } from '../../types/user.types';
 import Utils from '../../utils/utils';
 import { HTTPInternalServerError } from '../../errors/errorWithStatus';
@@ -21,12 +19,12 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threadComments = threadComments.filter((threadComment) => {
-                    const course = (<TThreadCommentDocument & { thread: TThreadComment & { course: TCourseDocument } }>threadComment).thread.course
+                    const course = threadComment.thread.course
                     return course.members.includes(userId) || course.owner == userId
                 })
             }
@@ -45,12 +43,12 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threadComments = threadComments.filter((threadComment) => {
-                    const course = (<TThreadCommentDocument & { thread: TThreadComment & { course: TCourseDocument } }>threadComment).thread.course
+                    const course = threadComment.thread.course
                     return course.members.includes(userId) || course.owner == userId
                 })
             }
@@ -70,12 +68,12 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = (<TRequestWithUser>req).user
+            const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer) {
                 threadComments = threadComments.filter((threadComment) => {
-                    const course = (<TThreadCommentDocument & { thread: TThreadComment & { course: TCourseDocument } }>threadComment).thread.course
+                    const course = threadComment.thread.course
                     return course.owner == userId
                 })
             }
@@ -90,7 +88,7 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
 
         createBaseBody: async (req) => {
             return {
-                createdBy: (<TRequestWithUser>req).user._id
+                createdBy: req.user._id
             }
         },
 
