@@ -15,6 +15,7 @@ export type TSurvey = {
         answer: any
     }[]
     deleted: boolean
+    createdBy: TUserDocument['_id']
 }
 
 export interface TSurveyDocument extends TSurvey, Document {}
