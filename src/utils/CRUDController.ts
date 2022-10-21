@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Model, Document, PipelineStage, FilterQuery } from 'mongoose';
+import { Model, Document, PipelineStage, FilterQuery, HydratedDocument } from 'mongoose';
 
 import { getQueryFromUrl } from 'odatafy-mongodb';
 import { ErrorWithStatus } from '../errors/errorWithStatus';
@@ -8,11 +8,16 @@ export type CRUDControllerOptions<T, TDocumentType> = {
     softDelete?: boolean,
     routeConfigs?: {
         getAllBaseQuery?:  (req: Request) => Promise<PipelineStage[]>,
+        getAllPostProc?: (req: Request, data: any[]) => Promise<any[]>,
         getByIdBaseQuery?: (req: Request) => Promise<FilterQuery<TDocumentType>>,
+        getByIdPostProc?: (req: Request, data: HydratedDocument<TDocumentType>) => Promise<HydratedDocument<TDocumentType>>,
         updateBaseQuery?:  (req: Request) => Promise<FilterQuery<TDocumentType>>,
         updateBaseBody?:   (req: Request) => Promise<Partial<T> | Partial<DocumentType>>
+        updatePostProc?: (req: Request, data: HydratedDocument<TDocumentType>) => Promise<HydratedDocument<TDocumentType>>,
         deleteBaseQuery?:  (req: Request) => Promise<FilterQuery<TDocumentType>>,
+        deletePostProc?: (req: Request) => void
         createBaseBody?:  (req: Request) => Promise<Partial<T> | Partial<DocumentType>>
+        createPostProc?: (req: Request, data: HydratedDocument<TDocumentType>) => Promise<HydratedDocument<TDocumentType>>,
     }
 }
 
@@ -41,8 +46,12 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
             }
 
             try {
-                const data = await model.aggregate(query as PipelineStage[]);
+                let data = await model.aggregate(query as PipelineStage[]);
                 
+                if(opts?.routeConfigs?.getAllPostProc) {
+                    data = await opts.routeConfigs.getAllPostProc(req, data)
+                }
+
                 res.json({
                     'data': data,
                     'count': data.length
@@ -68,10 +77,16 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                     query = { ...query, ...await opts.routeConfigs.getByIdBaseQuery(req) }
                 }
 
-                const data = await model.findOne(query);
+                let data = await model.findOne(query);
+
                 if(!data) {
                     return next(new ErrorWithStatus("Document not found", 404))
                 }
+
+                if(opts?.routeConfigs?.getByIdPostProc) {
+                    data = await opts.routeConfigs.getByIdPostProc(req, data)
+                }
+
                 res.json(data);
             } catch(e) {
                 next(e);
@@ -90,10 +105,14 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                     sanitizedBody = { ...sanitizedBody, ...await opts.routeConfigs.createBaseBody(req) }
                 }
 
-                const data = await model.create(sanitizedBody);
+                let data = await model.create(sanitizedBody);
 
                 if(!data) {
                     return next(new ErrorWithStatus("Document not found", 404))
+                }
+
+                if(opts?.routeConfigs?.createPostProc) {
+                    data = await opts.routeConfigs.createPostProc(req, data)
                 }
 
                 res.json(data);
@@ -131,10 +150,14 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                     query = { ...{ deleted: { $ne: true }}, ...query }
                 }
 
-                const data = await model.findOneAndUpdate(query, sanitizedBody, { new: true });
+                let data = await model.findOneAndUpdate(query, sanitizedBody, { new: true });
 
                 if(!data) {
                     return next(new ErrorWithStatus("Document not found", 404))
+                }
+
+                if(opts?.routeConfigs?.updatePostProc) {
+                    data = await opts.routeConfigs.updatePostProc(req, data)
                 }
 
                 res.json(data);
@@ -168,7 +191,11 @@ export default function<T, TDocumentType extends Document<T>, TModelType extends
                 } else {
                     await model.deleteOne(query);
                 }
-                
+
+                if(opts?.routeConfigs?.deletePostProc) {
+                    await opts.routeConfigs.deletePostProc(req)
+                }
+
                 res.status(204).json({});
             } catch(e) {
                 next(e);

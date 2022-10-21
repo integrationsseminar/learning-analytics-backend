@@ -1,6 +1,7 @@
 import { TUserDocument } from "../types/user.types";
 import jwt from "jsonwebtoken";
 import { TJWTPayload } from "../types/auth.types";
+import Notification from "../models/notification.model";
 
 export default class Utils {
     static generateToken(user: TUserDocument) {
@@ -14,5 +15,16 @@ export default class Utils {
                 expiresIn,
                 token: jwt.sign(dataStoredInToken, secret, { expiresIn }),
             };
+    }
+
+    static async createNotification(userId: string, title: string, message: string) {
+
+        //future: check here for notification settings
+        await Notification.create({
+            user: userId, 
+            title: title, 
+            message: message,
+            read: false
+        })
     }
 }
