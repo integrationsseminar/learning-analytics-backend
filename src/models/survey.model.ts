@@ -11,11 +11,16 @@ const schema = new Schema<TSurveyDocument>({
     answerType: {
         type: Schema.Types.Mixed, validate: {
             validator: function (v: any) {
+                if(!v) {
+                    return false;
+                }
+
                 const ajv = new Ajv();
                 return ajv.validateSchema(v);
             },
             message: (props: any) => `json schema is invalid: ${JSON.stringify(props, null, 4)}`
         },
+        required: true
     },
     answers: [
         {

@@ -9,6 +9,8 @@ const router = Router();
 
 router.get('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), SurveyController.getAll);
 
+router.post('/:id/answers', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), SurveyController.submitSurveyAnswer);
+
 router.get('/:id', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), SurveyController.getById);
 
 router.post('/', authMiddleware([UserRoles.Lecturer, UserRoles.Admin]), SurveyController.create);
