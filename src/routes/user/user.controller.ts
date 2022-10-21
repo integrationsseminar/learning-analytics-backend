@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import User from '../../models/user.model'
 import {getQueryFromUrl} from "odatafy-mongodb"
 import { PipelineStage } from 'mongoose';
-import { TRequestWithUser } from '../../types/auth.types';
 import { ErrorWithStatus } from '../../errors/errorWithStatus';
 
 export default class UserController {
@@ -22,7 +21,7 @@ export default class UserController {
 
     static async getLoggedInUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const user = await User.findById((<TRequestWithUser>req).user._id)
+            const user = await User.findById(req.user._id)
             return res.json(user);
         } catch (e) { 
             return next(e) 
@@ -43,7 +42,7 @@ export default class UserController {
 
     static async updateUserById(req: Request, res: Response, next: NextFunction) {
         try {
-            const user = await User.findOneAndUpdate({_id: (<TRequestWithUser>req).user._id}, req.body, { new: true });
+            const user = await User.findOneAndUpdate({_id: req.user._id}, req.body, { new: true });
             if (!user) { 
                 return next(new ErrorWithStatus("User not found", 404));
             }
