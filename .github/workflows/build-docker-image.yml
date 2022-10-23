@@ -1,11 +1,9 @@
 name: build-docker-image
 
 on:
-  workflow_run:
-    workflows: ["coverage"]
-    branches: [main]
-    types:
-      - completed
+  push:
+    branches:
+    - main
 
 jobs:
   build:
