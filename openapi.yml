@@ -130,7 +130,7 @@ paths:
                         format: JWT
                         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
                         
-  /user/my: 
+  /users/my: 
     get:
       tags:
       - user
