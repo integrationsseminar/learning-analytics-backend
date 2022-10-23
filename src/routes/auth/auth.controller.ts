@@ -23,7 +23,7 @@ export default class AuthController {
             }
             const newUser = await User.create(userToInsert);
             await Course.findOneAndUpdate({_id: req.params.id}, {$addToSet: {members: newUser._id}})
-            res.status(201).send();
+            res.status(201).json(newUser);
         } catch (e) {
             return next(e)
         }
