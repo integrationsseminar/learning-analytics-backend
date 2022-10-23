@@ -8,15 +8,17 @@ info:
   contact:
     email: 'support@gang-of-fork.de'
 tags:
+- name: auth
+  description: 'Routes about authentication'
 - name: user
-  description: 'Routes for all registered users (may be restricted by data ownership)'
-- name: lecturer
-  description: 'Routes for lecuterers'
-- name: admin
-  description: 'Routes for admins'
+  description: 'Routes about users'
+- name: misc
+  description: 'Miscellaneous routes'
 paths:
   /ping:
     get:
+      tags: 
+        - misc
       summary: 'Check if application is up'
       responses:
         200:
@@ -25,526 +27,17 @@ paths:
             text/plain:
               example: 'pong'
   
-  /courses:
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all courses for the loggged in user'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all courses'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Course'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
+  /auth/register/{courseId}:
     post:
       tags:
-      - lecturer
-      summary: 'Create a new course'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Course'
-      responses:
-        201:
-          description: 'Course created'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-  /courses/{courseId}:
-    parameters:
-    - in: path
-      name: courseId
-      required: true
-      schema:
-        type: string
-    put:
-      tags:
-      - lecturer
-      summary: 'Update a course'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Course'
-      responses:
-        200:
-          description: 'Course updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-    delete:
-      tags:
-      - lecturer
-      summary: 'Delete a course'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'Course deleted'
-          content:
-            application/json:
-              schema:
-                type: object
-                
-  /courses/{courseId}/threads:
-    parameters:
-    - in: path
-      name: courseId
-      required: true
-      schema:
-        type: integer
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all threads for a course'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all threads'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Thread'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
-                    
-  
-  
-  /threads:
-    post:
-      tags:
-      - user
-      summary: 'Create a new thread'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Thread'
-      responses:
-        201:
-          description: 'Course created'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-  /threads/{threadId}:
-    parameters:
-    - in: path
-      name: threadId
-      required: true
-      schema:
-        type: integer
-    put:
-      tags:
-      - user
-      summary: 'Update a thread'
-      description: 'Only the user who created a thread can update it'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Thread'
-      responses:
-        200:
-          description: 'Thread updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-    delete:
-      tags:
-      - user
-      summary: 'Delete a thread'
-      description: 'Only the user who created a thread can delete it'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'Thread deleted'
-          content:
-            application/json:
-              schema:
-                type: object
-  
-  /threads/{threadId}/threadcomments:
-    parameters:
-    - in: path
-      name: threadId
-      required: true
-      schema:
-        type: integer
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all threadcomments for a thread'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all threads'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ThreadComment'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
-  /threadcomments:
-    post:
-      tags:
-      - user
-      summary: 'Create a new threadcomment'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ThreadComment'
-      responses:
-        201:
-          description: 'Course created'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadComment'
-                
-  /threadcomments/{threadcommentId}:
-    parameters:
-    - in: path
-      name: threadcommentId
-      required: true
-      schema:
-        type: integer
-    put:
-      tags:
-      - user
-      summary: 'Update a threadcomment'
-      description: 'Only the user who created a threadcomment can update it'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ThreadComment'
-      responses:
-        200:
-          description: 'Thread updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadComment'
-    delete:
-      tags:
-      - user
-      summary: 'Delete a threadcomment'
-      description: 'Only the user who created a threadcomment can delete it'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'Threadcomment deleted'
-          content:
-            application/json:
-              schema:
-                type: object
-                    
-  /courses/{courseId}/surveys:
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all surveys for a course'
-      security:
-      - session_id: []
+      - auth
       parameters:
       - in: path
         name: courseId
         required: true
         schema:
-          type: integer
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all surveys'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Survey'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
-  /surveys:
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all surveys a user has access to'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all surveys'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Survey'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
-    
-    post:
-      tags:
-      - user
-      summary: 'Create a new survey'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Survey'
-      responses:
-        201:
-          description: 'Survey created'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Survey'
-  /survey/{surveyId}:
-    parameters:
-    - in: path
-      name: surveyId
-      required: true
-      schema:
-        type: integer
-    put:
-      tags:
-      - user
-      summary: 'Update a survey'
-      description: 'Only the user who created a survey can update it'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Survey'
-      responses:
-        200:
-          description: 'Survey updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Survey'
-    delete:
-      tags:
-      - user
-      summary: 'Delete a survey'
-      description: 'Only the user who created a survey can delete it'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'Survey created'
-          content:
-            application/json:
-              schema:
-                type: object
-                
-  /survey/{surveyId}/submit:
-    parameters:
-    - in: path
-      name: surveyId
-      required: true
-      schema:
-        type: integer
-    post:
-      tags:
-      - user
-      summary: 'Submit a survey answer'
-      security:
-      - session_id: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - value
-              properties:
-                value:
-                  type: string
-      responses:
-        201:
-          description: 'Survey submitted'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SurveyAnswer'
-                
-  /courses/{courseId}/users:
-    parameters:
-    - in: path
-      name: courseId
-      required: true
-      schema:
-        type: integer
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all users for a course'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'List of all users'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
-    post:
-        tags:
-        - lecturer
-        summary: 'Create new user mappings for a course'
-        description: 'Only Lecturers that create a course can add users to a course'
-        security:
-        - session_id: []
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items: 
-                      type: number
-                      description: userIDs
-        responses:
-          200:
-            description: 'User Mapping added'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    users:
-                      type: array
-                      items: 
-                        type: number
-                        description: userIDs
-  /courses/{courseId}/users/{userId}:
-    parameters:
-    - in: path
-      name: courseId
-      required: true
-      schema:
-        type: integer
-    - in: path
-      name: userId
-      required: true
-      schema:
-        type: integer
-    delete:
-      tags:
-      - lecturer
-      summary: 'Delete a user mapping for a course'
-      description: 'Only the lecturer who created a course can remove users from it'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'Mapping deleted'
-          content:
-            application/json:
-              schema:
-                type: object
-    
-  /users:
-    post:
-      tags:
-      - admin
-      summary: 'Create a new user'
-      security:
-      - session_id: []
+          type: string
+      summary: 'Create a new user (student) and assign to a course'
       requestBody:
         required: true
         content:
@@ -558,95 +51,109 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /users/{userId}:
-    parameters:
-    - in: path
-      name: userId
-      required: true
-      schema:
-        type: string
-    put:
+                
+  /auth/login/{courseId}:
+    post:
       tags:
-      - user
-      summary: 'Update a user'
-      description: 'User can only update their own data'
-      security:
-      - session_id: []
+      - auth
+      parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+      summary: 'Login a user and assign to a course'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties: 
+                email: 
+                  type: string
+                password: 
+                  type: string
       responses:
         200:
-          description: 'User updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-    delete:
-      tags:
-      - admin
-      summary: 'Delete a user'
-      security:
-      - session_id: []
-      responses:
-        204:
-          description: 'User deleted'
-          content:
-            application/json:
-              schema:
-                type: object
-  
-  /notifications:
-    get:
-      tags:
-      - user
-      summary: 'Get a list of all notifications for the loggged in user'
-      description: 'All notifications that are read via this route get read filed set to true'
-      security:
-      - session_id: []
-      parameters:
-      - $ref: '#/components/parameters/paginationTop'
-      - $ref: '#/components/parameters/paginationSkip'
-      responses:
-        200:
-          description: 'list of all notifications'
+          description: 'User logged in'
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Notification'
-                  count:
-                    type: integer
-                    description: 'count of all available items'
+                  email:
+                    type: string
+                  token: 
+                    type: object
+                    properties:
+                      expiresIn: 
+                        type: number
+                      token: 
+                        type: string
+                        format: JWT
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+                        
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: 'Login a user'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                email: 
+                  type: string
+                password: 
+                  type: string
+      responses:
+        200:
+          description: 'User logged in'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  token: 
+                    type: object
+                    properties:
+                      expiresIn: 
+                        type: number
+                      token: 
+                        type: string
+                        format: JWT
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+                        
+  /user/my: 
+    get:
+      tags:
+      - user
+      summary: 'Get Logged In User'
+      description: 'Header "Authorization" must be set with "Bearer \<JWT\>"'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
               
               
   
 components:
   securitySchemes:
-    session_id:
-      type: 'apiKey'
-      name: 'Authorization'
-      in: 'header'
-  parameters:
-    paginationTop:
-      in: query
-      name: top
-      required: false
-      schema:
-        type: integer
-    paginationSkip:
-      in: query
-      name: skip
-      required: false
-      schema:
-        type: integer
+    bearerJWT:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
   schemas:
     Course:
       type: object
@@ -721,14 +228,14 @@ components:
           type: integer
     User:
       type: object
-      description: 'Mapping from users to courses is done via userToCourse helper table (n -> m)'
       required:
       - name
       - email
       - password
       properties:
-        id:
-          type: integer
+        _id:
+          type: string
+          format: ObjectId
           readOnly: true
         name:
           type: string
@@ -740,6 +247,7 @@ components:
         role:
           type: string
           enum: [ 'Student', 'Lecturer', 'Admin' ]
+          readOnly: true
         profilePicture:
           type: string
           nullable: true
