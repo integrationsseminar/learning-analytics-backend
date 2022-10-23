@@ -40,7 +40,7 @@ export default class UserController {
         }
     }
 
-    static async updateUserById(req: Request, res: Response, next: NextFunction) {
+    static async updateLoggedInUser(req: Request, res: Response, next: NextFunction) {
         try {
             const user = await User.findOneAndUpdate({_id: req.user._id}, req.body, { new: true });
             if (!user) { 
