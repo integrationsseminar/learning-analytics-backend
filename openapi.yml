@@ -1,0 +1,329 @@
+openapi: 3.0.0
+servers:
+  - url: https://learninganalytics.gang-of-fork.de
+info:
+  description: 'Learning Analytics API Documentation'
+  version: '1.0.0'
+  title: 'Learning Analytics API '
+  contact:
+    email: 'support@gang-of-fork.de'
+tags:
+- name: auth
+  description: 'Routes about authentication'
+- name: user
+  description: 'Routes about users'
+- name: misc
+  description: 'Miscellaneous routes'
+paths:
+  /ping:
+    get:
+      tags: 
+        - misc
+      summary: 'Check if application is up'
+      responses:
+        200:
+          description: 'Application is up'
+          content:
+            text/plain:
+              example: 'pong'
+  
+  /auth/register/{courseId}:
+    post:
+      tags:
+      - auth
+      parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+      summary: 'Create a new user (student) and assign to a course'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        201:
+          description: 'User created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+                
+  /auth/login/{courseId}:
+    post:
+      tags:
+      - auth
+      parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+      summary: 'Login a user and assign to a course'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                email: 
+                  type: string
+                password: 
+                  type: string
+      responses:
+        200:
+          description: 'User logged in'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  token: 
+                    type: object
+                    properties:
+                      expiresIn: 
+                        type: number
+                      token: 
+                        type: string
+                        format: JWT
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+                        
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: 'Login a user'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                email: 
+                  type: string
+                password: 
+                  type: string
+      responses:
+        200:
+          description: 'User logged in'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  token: 
+                    type: object
+                    properties:
+                      expiresIn: 
+                        type: number
+                      token: 
+                        type: string
+                        format: JWT
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+                        
+  /users/my: 
+    get:
+      tags:
+      - user
+      summary: 'Get Logged In User'
+      description: 'Header "Authorization" must be set with "Bearer \<JWT\>"'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              
+              
+  
+components:
+  securitySchemes:
+    bearerJWT:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
+  schemas:
+    Course:
+      type: object
+      required:
+      - name
+      - start
+      - end
+      - progressType
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        color:
+          type: string
+          nullable: true
+        progressType:
+          type: string
+          enum: [ 'ByDate' ]
+        progress:
+          type: number
+          readOnly: true
+    Thread:
+      type: object
+      description: 'Belongs to course via courseId'
+      required:
+      - courseId
+      - title
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        courseId:
+          type: integer
+        createdAt:
+          type: string
+          readOnly: true
+        createdBy:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+    ThreadComment:
+      type: object
+      description: 'Belongs to thread via threadId'
+      required:
+      - message
+      - threadId
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        createdAt:
+          type: string
+          readOnly: true
+        createdBy:
+          type: integer
+          readOnly: true
+        message:
+          type: string
+        threadId:
+          type: integer
+    User:
+      type: object
+      required:
+      - name
+      - email
+      - password
+      properties:
+        _id:
+          type: string
+          format: ObjectId
+          readOnly: true
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+        role:
+          type: string
+          enum: [ 'Student', 'Lecturer', 'Admin' ]
+          readOnly: true
+        profilePicture:
+          type: string
+          nullable: true
+    Survey:
+      type: object
+      description: 'Is mapped to individual users via survey answers'
+      required:
+      - type
+      - question
+      - start
+      - end
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          enum: [ 'Text' ]
+        question:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        courseId:
+          type: integer
+          nullable: true
+          description: 'optional, only set when survey belongs to course'
+    SurveyAnswer:
+      type: object
+      description: 'Belongs to survey via surveyId and to user via userId. All Answers are created with null as value when a survey is created.'
+      required:
+      - surveyId
+      - userId
+      - value
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        surveyId:
+          type: integer
+        userId:
+          type: integer
+        value:
+          type: string
+          nullable: true
+    Notification:
+      type: object
+      description: 'Belongs to user via userId'
+      required:
+      - userId
+      - title
+      - message
+      - senderId
+      - read
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        userId:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+          nullable: true
+        senderId:
+          type: integer
+        read:
+          type: boolean
+          readOnly: true
+          default: false
+          description: 'Indicate if user has read a notification via a GET request'
+
+        
+        
+        
