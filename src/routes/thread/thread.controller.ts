@@ -89,7 +89,7 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
             })
             return { $and: [{ _id: { $in: threadIds } }, { _id: req.params.id }] }
         },
-
+        //hinzufügen, dass man nur Threads zu seinen eigenen Kursen adden kann
         createBaseBody: async (req) => {
             return {
                 createdBy: req.user._id

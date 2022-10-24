@@ -10,10 +10,12 @@ info:
 tags:
 - name: auth
   description: 'Routes about authentication'
-- name: user
+- name: users
   description: 'Routes about users'
 - name: misc
   description: 'Miscellaneous routes'
+- name: threads
+  description: 'Routes about threads'
 paths:
   /ping:
     get:
@@ -133,9 +135,30 @@ paths:
   /users/my: 
     get:
       tags:
-      - user
+      - users
       summary: 'Get Logged In User'
-      description: 'Header "Authorization" must be set with "Bearer \<JWT\>"'
+      security: 
+        - bearerJWT: []
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      responses:
+        200:
+          description: 'User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  
+  # Thread Routes Odatafy
+  
+  /threads:
+    get:
+      tags:
+      - threads
+      summary: 'Get Threads (Odatafy)'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      description: 'Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
       security: 
         - bearerJWT: []
       responses:
@@ -144,16 +167,125 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Thread'
+                
+    post:
+      tags:
+      - threads
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Create a new Thread'
+      description: 'Minimum Role: Student'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Thread'
+      responses:
+        201:
+          description: 'Thread created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+                
+                
+  /threads/{threadId}:
+    get:
+      tags:
+      - threads
+      summary: 'Get a single Thread'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: threadId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      description: 'Minimum Role: Student'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Thread'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+                
+    put:
+      tags:
+      - threads
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: threadId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      summary: 'Update a Thread'
+      description: 'Minimum Role: Student<br>course is immutable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Thread'
+      responses:
+        200:
+          description: 'Thread created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+                
+    delete:
+      tags:
+      - threads
+      summary: 'Delete a single thread'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: threadId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      description: 'Minimum Role: Lecturer'
+      security: 
+        - bearerJWT: []
+      responses:
+        204:
+          description: 'Thread'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+    
+      
+      
               
               
   
 components:
   securitySchemes:
-    bearerJWT:            # arbitrary name for the security scheme
+    bearerJWT:            
       type: http
       scheme: bearer
       bearerFormat: JWT  
+  parameters: 
+    bearerJWT:
+      in: header
+      name: Authorization
+      schema:
+        type: string
+        format: JWT
+        example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+      required: true
+        
   schemas:
     Course:
       type: object
@@ -185,21 +317,27 @@ components:
           readOnly: true
     Thread:
       type: object
-      description: 'Belongs to course via courseId'
+      description: 'A Thread with Threadcomments, representing a conversation'
       required:
-      - courseId
+      - course
       - title
+      - createdBy
+      - createdAt
       properties:
-        id:
+        _id:
           type: integer
           readOnly: true
-        courseId:
-          type: integer
+        course:
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/Course'
         createdAt:
           type: string
           readOnly: true
         createdBy:
-          type: integer
+          type: string
+          format: ObjectId
           readOnly: true
         title:
           type: string
