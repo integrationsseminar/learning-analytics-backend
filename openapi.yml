@@ -12,14 +12,14 @@ tags:
   description: 'Routes about authentication'
 - name: users
   description: 'Routes about users'
-- name: misc
-  description: 'Miscellaneous routes'
 - name: threads
   description: 'Routes about threads (representing conversations)'
 - name: threadcomments
   description: 'Routes about threadcomments'
 - name: notifications
   description: 'Routes about notifications'
+- name: misc
+  description: 'Miscellaneous routes'
   
 paths:
   /ping:
@@ -161,6 +161,26 @@ paths:
                         type: string
                         format: JWT
                         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUyOTMzOTE4ZmI3OWQzNGNmODk4ZjIiLCJyb2xlIjoiU3R1ZGVudCIsImlhdCI6MTY2NjM1Njg5NSwiZXhwIjoxNjY2MzcxMjk1fQ.2-sxoJ7lKMFh5Tu3r8lH07jpw6He8-KXznQh8wK7-lw
+      
+  /users:              
+    get:
+      tags:
+      - users
+      summary: 'Get Users (Odatafy)'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      description: 'Minimum Role: Admin<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Users'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
                         
   /users/my: 
     get:
@@ -178,6 +198,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+    put:
+      tags:
+      - users
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Update a User'
+      description: 'Minimum Role: Student'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: 'User updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+                  
+  /users/{userId}:
+    delete:
+      tags:
+      - users
+      summary: 'Delete a single User'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      description: 'Minimum Role: Admin'
+      security: 
+        - bearerJWT: []
+      responses:
+        204:
+          description: 'User deleted'
+        
   
   # Thread Routes CRUD Controller
   /threads:
@@ -192,7 +253,7 @@ paths:
         - bearerJWT: []
       responses:
         200:
-          description: 'Thread'
+          description: 'Threads'
           content:
             application/json:
               schema:
@@ -266,7 +327,7 @@ paths:
               $ref: '#/components/schemas/Thread'
       responses:
         200:
-          description: 'Thread created'
+          description: 'Thread updated'
           content:
             application/json:
               schema:
@@ -289,11 +350,7 @@ paths:
         - bearerJWT: []
       responses:
         204:
-          description: 'Thread'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Thread'
+          description: 'Thread deleted'
                 
                 
   # ThreadComment Routes CRUD Controller
@@ -309,7 +366,7 @@ paths:
         - bearerJWT: []
       responses:
         200:
-          description: 'ThreadComment'
+          description: 'ThreadComments'
           content:
             application/json:
               schema:
@@ -380,11 +437,7 @@ paths:
         - bearerJWT: []
       responses:
         204:
-          description: 'Thread'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadComment'
+          description: 'ThreadComment deleted'
                 
   
 components:
@@ -559,32 +612,27 @@ components:
           nullable: true
     Notification:
       type: object
-      description: 'Belongs to user via userId'
       required:
-      - userId
+      - user
       - title
       - message
-      - senderId
       - read
       properties:
-        id:
-          type: integer
+        _id:
+          type: string
+          format: ObjectId
           readOnly: true
-        userId:
-          type: integer
+        user:
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/User'
         title:
           type: string
         message:
           type: string
-          nullable: true
-        senderId:
-          type: integer
         read:
           type: boolean
           readOnly: true
           default: false
           description: 'Indicate if user has read a notification via a GET request'
-
-        
-        
-        
