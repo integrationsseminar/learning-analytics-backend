@@ -16,6 +16,10 @@ tags:
   description: 'Routes about threads (representing conversations)'
 - name: threadcomments
   description: 'Routes about threadcomments'
+- name: courses
+  description: 'Routes for Courses'
+- name: surveys
+  description: 'Routes for surveys'
 - name: notifications
   description: 'Routes about notifications'
 - name: misc
@@ -438,6 +442,225 @@ paths:
       responses:
         204:
           description: 'ThreadComment deleted'
+  
+   # Course Routes CRUD Controller
+  /courses:
+    get:
+      tags:
+      - courses
+      summary: 'Get Courses (Odatafy)'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      description: 'Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Courses'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+                
+    post:
+      tags:
+      - courses
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Create a new Course'
+      description: 'Minimum Role: Lecturer'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        201:
+          description: 'Course created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+                
+  /courses/{courseId}:
+    parameters: 
+      - $ref: '#/components/parameters/bearerJWT'
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: ObjectId
+    get:
+      tags:
+      - courses
+      summary: 'Get a single Course'
+      description: 'Minimum Role: Student'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Courses'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+                
+    put:
+      tags:
+      - courses
+      summary: 'Update a Course'
+      description: 'Minimum Role: Lecturer<br>course is immutable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        200:
+          description: 'Course updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+                
+    delete:
+      tags:
+      - courses
+      summary: 'Delete a single course'
+      description: 'Minimum Role: Lecturer'
+      security: 
+        - bearerJWT: []
+      responses:
+        204:
+          description: 'Course deleted'
+          
+  # Survey Routes CRUD Controller
+  /surveys:
+    get:
+      tags:
+      - surveys
+      summary: 'Get Surveys (Odatafy)'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      description: 'Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Surveys'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Survey'
+                
+    post:
+      tags:
+      - surveys
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Create a new Survey'
+      description: 'Minimum Role: Lecturer'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Survey'
+      responses:
+        201:
+          description: 'Survey created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Survey'
+                
+  /surveys/{surveyId}:
+    parameters: 
+      - $ref: '#/components/parameters/bearerJWT'
+      - in: path
+        name: surveyId
+        required: true
+        schema:
+          type: string
+          format: ObjectId
+    get:
+      tags:
+      - surveys
+      summary: 'Get a single Survey'
+      description: 'Minimum Role: Student'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'Survey'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Survey'
+                
+    put:
+      tags:
+      - surveys
+      summary: 'Update a Survey'
+      description: 'Minimum Role: Lecturer'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Survey'
+      responses:
+        200:
+          description: 'Survey updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Survey'
+                
+    delete:
+      tags:
+      - surveys
+      summary: 'Delete a single survey'
+      description: 'Minimum Role: Lecturer'
+      security: 
+        - bearerJWT: []
+      responses:
+        204:
+          description: 'Survey deleted'
+  
+  /surveys/{surveyId}/answers:
+    parameters: 
+      - $ref: '#/components/parameters/bearerJWT'
+      - in: path
+        name: surveyId
+        required: true
+        schema:
+          type: string
+          format: ObjectId
+    post:
+      tags:
+      - surveys
+      summary: 'Submit a survey answer'
+      description: 'Minimum Role: Student'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  description: 'Answer that conforms with jsonschema of answerType'
+      responses:
+        204:
+          description: 'Answer submitted'
                 
   
 components:
@@ -465,11 +688,22 @@ components:
       - end
       - progressType
       properties:
-        id:
-          type: integer
-          readOnly: true
         name:
           type: string
+        owner: 
+          readOnly: true
+          description: 'if user is an Admin he needs to set owner explicitly'
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/User'
+        members:
+          type: array
+          items:
+            oneOf:
+            - type: string
+              format: ObjectId
+            - $ref: '#/components/schemas/User'
         start:
           type: string
           format: date-time
@@ -478,11 +712,10 @@ components:
           format: date-time
         color:
           type: string
-          nullable: true
         progressType:
           type: string
           enum: [ 'ByDate' ]
-        progress:
+        deleted:
           type: number
           readOnly: true
     Thread:
@@ -569,47 +802,50 @@ components:
       type: object
       description: 'Is mapped to individual users via survey answers'
       required:
-      - type
-      - question
-      - start
-      - end
+      - title
+      - description
+      - answerType
       properties:
-        id:
-          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        users:
+          type: array
+          items:
+            oneOf:
+              - type: string
+                format: ObjectId
+              - $ref: '#/components/schemas/User'
+        answerType:
+          format: jsonschema
+          description: 'Type of answer as jsonschema'
+        answers:
+          type: array
+          items:
+            type: object
+            required:
+            - user
+            - answer
+            properties:
+              user:
+                oneOf:
+                - type: string
+                  format: ObjectId
+                - $ref: '#/components/schemas/User'
+              answer:
+                description: 'Any Data that conforms with answerType'
+        deleted:
+          type: boolean
           readOnly: true
-        type:
-          type: string
-          enum: [ 'Text' ]
-        question:
-          type: string
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
-        courseId:
-          type: integer
-          nullable: true
-          description: 'optional, only set when survey belongs to course'
-    SurveyAnswer:
-      type: object
-      description: 'Belongs to survey via surveyId and to user via userId. All Answers are created with null as value when a survey is created.'
-      required:
-      - surveyId
-      - userId
-      - value
-      properties:
-        id:
-          type: integer
+        createdBy:
           readOnly: true
-        surveyId:
-          type: integer
-        userId:
-          type: integer
-        value:
-          type: string
-          nullable: true
+          description: 'if survey is created by Admin has to be set explicitly'
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/Thread'
+          
     Notification:
       type: object
       required:
