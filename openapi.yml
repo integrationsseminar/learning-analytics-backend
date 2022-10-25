@@ -15,7 +15,12 @@ tags:
 - name: misc
   description: 'Miscellaneous routes'
 - name: threads
-  description: 'Routes about threads'
+  description: 'Routes about threads (representing conversations)'
+- name: threadcomments
+  description: 'Routes about threadcomments'
+- name: notifications
+  description: 'Routes about notifications'
+  
 paths:
   /ping:
     get:
@@ -26,8 +31,33 @@ paths:
         200:
           description: 'Application is up'
           content:
-            text/plain:
-              example: 'pong'
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  msg:
+                    type: string
+                    example: pong
+              
+  /notifications:
+    get: 
+      tags: 
+        - notifications
+      security: 
+        - bearerJWT: []
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Get all notifications for logged in user'
+      responses: 
+        200:
+          description: 'Notifications'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+            
   
   /auth/register/{courseId}:
     post:
@@ -149,8 +179,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
   
-  # Thread Routes Odatafy
-  
+  # Thread Routes CRUD Controller
   /threads:
     get:
       tags:
@@ -163,11 +192,13 @@ paths:
         - bearerJWT: []
       responses:
         200:
-          description: 'User'
+          description: 'Thread'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Thread'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Thread'
                 
     post:
       tags:
@@ -189,7 +220,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Thread'
-                
                 
   /threads/{threadId}:
     get:
@@ -264,11 +294,98 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Thread'
-    
-      
-      
-              
-              
+                
+                
+  # ThreadComment Routes CRUD Controller
+  /threadcomments:
+    get:
+      tags:
+      - threadcomments
+      summary: 'Get ThreadComments (Odatafy)'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      description: 'Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'ThreadComment'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ThreadComment'
+                
+    post:
+      tags:
+      - threadcomments
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+      summary: 'Create a new ThreadComment'
+      description: 'Minimum Role: Student'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadComment'
+      responses:
+        201:
+          description: 'ThreadComment created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadComment'
+                
+                
+  /threadcomments/{threadcommentId}:
+    get:
+      tags:
+      - threadcomments
+      summary: 'Get a single ThreadComment'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: threadcommentId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      description: 'Minimum Role: Student'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'ThreadComment'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadComment'
+                
+    delete:
+      tags:
+      - threadcomments
+      summary: 'Delete a single ThreadComment'
+      parameters: 
+        - $ref: '#/components/parameters/bearerJWT'
+        - in: path
+          name: threadcommentId
+          required: true
+          schema:
+            type: string
+            format: ObjectId
+      description: 'Minimum Role: Lecturer'
+      security: 
+        - bearerJWT: []
+      responses:
+        204:
+          description: 'Thread'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadComment'
+                
   
 components:
   securitySchemes:
@@ -334,6 +451,7 @@ components:
           - $ref: '#/components/schemas/Course'
         createdAt:
           type: string
+          format: Date
           readOnly: true
         createdBy:
           type: string
@@ -346,24 +464,29 @@ components:
           nullable: true
     ThreadComment:
       type: object
-      description: 'Belongs to thread via threadId'
       required:
       - message
-      - threadId
+      - thread
       properties:
-        id:
-          type: integer
+        _id:
+          type: string
+          format: ObjectId
           readOnly: true
         createdAt:
           type: string
+          format: Date
           readOnly: true
         createdBy:
-          type: integer
+          type: string
+          format: ObjectId
           readOnly: true
         message:
           type: string
-        threadId:
-          type: integer
+        thread:
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/Thread'
     User:
       type: object
       required:

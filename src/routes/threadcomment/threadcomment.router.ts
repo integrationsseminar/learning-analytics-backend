@@ -9,6 +9,6 @@ const router = Router();
 router.get('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadCommentController.getAll);
 router.get('/:id', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadCommentController.getById);
 router.post('/', authMiddleware([UserRoles.Student, UserRoles.Lecturer, UserRoles.Admin]), ThreadCommentController.create);
-router.delete('/:id', authMiddleware([UserRoles.Admin]), ThreadCommentController.delete);
+router.delete('/:id', authMiddleware([UserRoles.Lecturer, UserRoles.Admin]), ThreadCommentController.delete);
 
 export default router;
