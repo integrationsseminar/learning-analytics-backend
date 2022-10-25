@@ -1,6 +1,7 @@
 # backend
 **ENV VARS MAINTAINED IN projekt-fitnessapp/infrastruktur ONLY!**
-Test
+## Swagger Dokumentation
+**[Link zur Doku](https://integrationsseminar.github.io/learning-analytics-backend/)**
 
 ### Prerequisite
 
