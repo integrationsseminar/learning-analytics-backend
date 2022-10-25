@@ -70,7 +70,7 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
             })
             const { _id: userId, role } = req.user
 
-            //only keep threads that the requesting user has access to (owner / member)
+            //only keep threads that the requesting user has access to (owner)
             if (role == UserRoles.Lecturer) {
                 threadComments = threadComments.filter((threadComment) => {
                     const course = threadComment.thread.course
@@ -86,6 +86,7 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
             return [{ $match: { _id: { $in: threadIds } } }] as PipelineStage[]
         },
 
+        //hinzufügen, dass man nur Kommentare in Threads erstellen kann, zu denen man access hat
         createBaseBody: async (req) => {
             return {
                 createdBy: req.user._id
