@@ -6,6 +6,9 @@ import { TSurvey, TSurveyDocument, TSurveyModel } from '../../types/survey.types
 import { ErrorWithStatus } from '../../errors/errorWithStatus';
 import Survey from '../../models/survey.model';
 
+import { TCourseDocument } from '../../types/course.types';
+import Course from '../../models/course.model';
+
 import { UserRoles } from '../../types/user.types';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
@@ -80,6 +83,25 @@ const CRUDOpts: CRUDControllerOptions<TSurvey, TSurveyDocument> = {
             return []
         },
         createBaseBody: async (req) => {
+
+            if(req.body.course && !req.body.users) {
+                const query: mongoose.FilterQuery<TCourseDocument> = { _id: req.body.course, deleted: { $ne: true } }
+
+                if(req.user.role == UserRoles.Lecturer) {
+                    query['owner'] = req.user._id
+                }
+
+                const course = await Course.findOne();
+
+                if(!course) {
+                    return {}
+                }
+
+                return {
+                    users: course.members
+                }
+            }
+
             if(req.user.role == UserRoles.Lecturer) {
                 return {
                     createdBy: req.user._id
