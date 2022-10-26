@@ -14,14 +14,12 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
             const { _id: userId, role } = req.user
 
             //only keep threads that the requesting user has access to (owner / member)
+            console.log(req.user._id)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threads = threads.filter((thread) => {
-                    return thread.course.members.includes(userId)
-                        || thread.course.owner == userId
+                    return (thread.course.members.includes(userId) || thread.course.owner == userId.toString())
                 });
             }
-
-            //extract the threadIds
             let threadIds = threads.map((thread) => {
                 return thread._id
             })
