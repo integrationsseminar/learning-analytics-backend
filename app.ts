@@ -5,12 +5,15 @@ import * as bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import router from './src/routes/routes';
 import errorMiddleware from './src/middleware/error.middleware';
+import cors from "cors"
 
 
 dotenv.config();
 
 
 const app = express();
+
+app.use(cors)
 
 mongoose.connect(process.env.DB_URL as string, () => {
     console.log("Connected to MongoDB")
