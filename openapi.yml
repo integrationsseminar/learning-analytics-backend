@@ -51,17 +51,22 @@ paths:
         - bearerJWT: []
       parameters: 
         - $ref: '#/components/parameters/bearerJWT'
-      summary: 'Get all notifications for logged in user'
+      summary: 'Get Notifications (Odatafy)'
       responses: 
         200:
-          description: 'Notifications'
+          description: 'Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
-            
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                
   
   /auth/register/{courseId}:
     post:
@@ -182,9 +187,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
                         
   /users/my: 
     get:
@@ -261,9 +271,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Thread'
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Thread'
                 
     post:
       tags:
@@ -374,9 +389,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ThreadComment'
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ThreadComment'
                 
     post:
       tags:
@@ -460,10 +480,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Course'
-                
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                      
     post:
       tags:
       - courses
@@ -556,9 +581,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Survey'
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Survey'
+                  
                 
     post:
       tags:
@@ -765,6 +796,9 @@ components:
         createdBy:
           type: string
           format: ObjectId
+          readOnly: true
+        createdByOwner: 
+          type: boolean
           readOnly: true
         message:
           type: string
