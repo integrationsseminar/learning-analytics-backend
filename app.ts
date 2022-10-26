@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors)
+app.use(cors())
 
 mongoose.connect(process.env.DB_URL as string, () => {
     console.log("Connected to MongoDB")
