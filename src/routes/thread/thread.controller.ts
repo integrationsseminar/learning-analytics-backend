@@ -11,13 +11,14 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
     routeConfigs: {
         getAllBaseQuery: async (req) => {
             let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             //only keep threads that the requesting user has access to (owner / member)
             console.log(req.user._id)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
                 threads = threads.filter((thread) => {
-                    return (thread.course.members.includes(userId) || thread.course.owner == userId.toString())
+                    return (thread.course.members.includes(userId) || thread.course.owner == userId)
                 });
             }
             let threadIds = threads.map((thread) => {
@@ -28,7 +29,8 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
 
         getByIdBaseQuery: async (req) => {
             let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
@@ -45,7 +47,8 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
         },
 
         updateBaseQuery: async (req) => {
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             let threads = await Thread.find({}).populate('course', 'members owner')
 

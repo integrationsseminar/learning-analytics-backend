@@ -20,7 +20,8 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
@@ -44,7 +45,8 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             //only keep threads that the requesting user has access to (owner / member)
             if (role == UserRoles.Lecturer || role == UserRoles.Student) {
@@ -69,7 +71,8 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                     model: 'Course'
                 }
             })
-            const { _id: userId, role } = req.user
+            const { _id, role } = req.user
+            const userId = _id.toString()
 
             //only keep threads that the requesting user has access to (owner)
             if (role == UserRoles.Lecturer) {
