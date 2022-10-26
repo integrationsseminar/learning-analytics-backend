@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: https://learninganalytics.gang-of-fork.de
+  - url: https://api.learning-analytics.gang-of-fork.de
 info:
   description: 'Learning Analytics API Documentation'
   version: '1.0.0'
