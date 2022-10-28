@@ -7,8 +7,6 @@ export type TThreadComment = {
     createdBy: TUserDocument['_id']
     message: string
     deleted: boolean
-    //virtual
-    createdByOwner: boolean
 }
 
 export interface TThreadCommentDocument extends TThreadComment, Document { }

@@ -3,7 +3,7 @@ import { TThreadComment, TThreadCommentDocument, TThreadCommentModel } from '../
 import ThreadComment from '../../models/threadcomment.model';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
-import {  PipelineStage } from 'mongoose';
+import { PipelineStage } from 'mongoose';
 import { UserRoles } from '../../types/user.types';
 import Utils from '../../utils/utils';
 import { HTTPBadRequestError, HTTPInternalServerError } from '../../errors/errorWithStatus';
@@ -35,6 +35,58 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                 return thread._id
             })
             return [{ $match: { _id: { $in: threadIds } } }] as PipelineStage[]
+        },
+
+        getAllPostProc: async (_req, data) => {
+            return await Promise.all(data.map(async(threadcomment) => {
+                const thread = await Thread.findOne({_id: threadcomment.thread}).populate('course')
+                //should be impossible
+                if(!thread) throw new HTTPBadRequestError("cannot unselect thread")
+                return {...threadcomment, createdByOwner: threadcomment.createdBy.toString() == thread.course.owner.toString()}
+            }))
+            
+            
+           /*
+            const ids = data.map(threadcomment => threadcomment._id)
+            return ThreadComment.aggregate([{
+                $match: {
+                    _id: {
+                        $in: ids
+                    }
+                }
+            }, {
+                $lookup: {
+                    from: "threads",
+                    localField: "thread",
+                    foreignField: "_id",
+                    as: "thread"
+                }
+            },
+            {
+                $lookup: {
+                    from: "courses",
+                    localField: "thread.course",
+                    foreignField: "_id",
+                    as: "thread.course"
+                }
+            },       
+                {
+                 $addFields: {
+                     createdByOwner: {
+                         $eq: [
+                             "createdBy",
+                             "thread.course.owner"
+                         ]
+                         }
+                     }
+                 }
+                
+                
+            ])
+
+*/
+
+
         },
 
         getByIdBaseQuery: async (req) => {
@@ -92,24 +144,20 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
 
         //hinzufügen, dass man nur Kommentare in Threads erstellen kann, zu denen man access hat
         createBaseBody: async (req) => {
-            const thread = await Thread.findOne({_id: req.body.thread}).populate('course')
-
-        if(!thread) throw new HTTPBadRequestError("Thread not found")
             return {
-                createdBy: req.user._id,
-                createdByOwner: req.user._id.equals(thread.course.owner)
+                createdBy: req.user._id
             }
         },
 
         createPostProc: async (_req, data) => {
-            let threadComment = await ThreadComment.findOne({_id: data._id}).populate({
+            let threadComment = await ThreadComment.findOne({ _id: data._id }).populate({
                 path: 'thread',
                 populate: {
                     path: 'course',
                     model: 'Course'
                 }
             })
-            if(!threadComment) {
+            if (!threadComment) {
                 throw new HTTPInternalServerError("Error in createPostProc of threadcomment controller")
             }
             await Utils.createNotification([...threadComment.thread.course.members, threadComment.thread.course.owner], `Neuer Kommentar auf einen Thread`, "Es wurde ein neuer Kommentar im Thread mem lal lol erstellt. Bitte einloggen")
