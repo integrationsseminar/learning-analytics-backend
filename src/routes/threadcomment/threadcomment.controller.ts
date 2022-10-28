@@ -3,7 +3,7 @@ import { TThreadComment, TThreadCommentDocument, TThreadCommentModel } from '../
 import ThreadComment from '../../models/threadcomment.model';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
-import { PipelineStage } from 'mongoose';
+import {  PipelineStage } from 'mongoose';
 import { UserRoles } from '../../types/user.types';
 import Utils from '../../utils/utils';
 import { HTTPBadRequestError, HTTPInternalServerError } from '../../errors/errorWithStatus';
@@ -44,49 +44,6 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                 if(!thread) throw new HTTPBadRequestError("cannot unselect thread")
                 return {...threadcomment, createdByOwner: threadcomment.createdBy.toString() == thread.course.owner.toString()}
             }))
-            
-            
-           /*
-            const ids = data.map(threadcomment => threadcomment._id)
-            return ThreadComment.aggregate([{
-                $match: {
-                    _id: {
-                        $in: ids
-                    }
-                }
-            }, {
-                $lookup: {
-                    from: "threads",
-                    localField: "thread",
-                    foreignField: "_id",
-                    as: "thread"
-                }
-            },
-            {
-                $lookup: {
-                    from: "courses",
-                    localField: "thread.course",
-                    foreignField: "_id",
-                    as: "thread.course"
-                }
-            },       
-                {
-                 $addFields: {
-                     createdByOwner: {
-                         $eq: [
-                             "createdBy",
-                             "thread.course.owner"
-                         ]
-                         }
-                     }
-                 }
-                
-                
-            ])
-
-*/
-
-
         },
 
         getByIdBaseQuery: async (req) => {
@@ -113,6 +70,16 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                 return thread._id
             })
             return [{ $match: { _id: { $in: threadIds } } }] as PipelineStage[]
+        },
+
+        getByIdPostProc: async (_req, threadcomment) => {
+            const thread = await Thread.findOne({_id: threadcomment.thread}).populate('course')
+                //should be impossible
+                if(!thread) throw new HTTPBadRequestError("cannot unselect thread")
+                console.log(thread.course.owner.toString() == threadcomment.createdBy.toString())
+                threadcomment.createdByOwner = thread.course.owner.toString() == threadcomment.createdBy.toString()
+                console.log(threadcomment)
+                return threadcomment
         },
 
         deleteBaseQuery: async (req) => {
