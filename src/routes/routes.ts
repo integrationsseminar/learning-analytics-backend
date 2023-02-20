@@ -5,8 +5,10 @@ import UserRouter from "./user/user.router";
 import CourseRouter from './course/course.router';
 import ThreadRouter from './thread/thread.router';
 import SurveyRouter from './survey/survey.router';
-import ThreadCommentRouter from './threadcomment/threadcomment.router'
-import ThreadNotificationsRouter from './notification/notification.router'
+import ThreadCommentRouter from './threadcomment/threadcomment.router';
+import ThreadNotificationsRouter from './notification/notification.router';
+import TrophyRouter from './trophy/trophy.router';
+import UserTrophyRouter from './usertrophy/usertrophy.router';
 
 const router = Router();
 
@@ -17,6 +19,8 @@ router.use('/courses', CourseRouter);
 router.use('/threads', ThreadRouter);
 router.use('/surveys', SurveyRouter);
 router.use('/threadcomments', ThreadCommentRouter);
-router.use('/notifications', ThreadNotificationsRouter)
+router.use('/notifications', ThreadNotificationsRouter);
+router.use('/trophy', TrophyRouter);
+router.use('/usertrophy', UserTrophyRouter);
 
 export default router

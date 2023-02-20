@@ -1,10 +1,12 @@
 import { Document, Model } from "mongoose"
 
 export type TTrophy = {
-    name: TrophyNames
+    identifier: TrophyIdents
     description: string
-    tiers: TrophyTiers[]
-    deleted: boolean
+    tiers: {
+        tier: TrophyTiers
+        description: string
+    }[]
 }
 
 export enum TrophyTiers {
@@ -14,7 +16,7 @@ export enum TrophyTiers {
     GOLD   = 3
 }
 
-export enum TrophyNames {
+export enum TrophyIdents {
     CreateThreadComment = "CreateThreadComment",
     SubmitSurveyAnswer = "SubmitSurveyAnswer",
     ReadNotification = "ReadNotification"
