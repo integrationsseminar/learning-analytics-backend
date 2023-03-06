@@ -24,6 +24,10 @@ tags:
   description: 'Routes about notifications'
 - name: misc
   description: 'Miscellaneous routes'
+- name: trophys
+  description: 'Routes for trophys'
+- name: usertrophys
+  description: 'Routes for usertrophys'
   
 paths:
   /ping:
@@ -660,8 +664,65 @@ paths:
       responses:
         204:
           description: 'Answer submitted'
-                
   
+  /trophys:
+    get:
+      summary: 'get all available trophys'
+      tags:
+        - trophys
+      responses:
+        200:
+          description: 'Answer submitted'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trophy'
+                  length:
+                    type: number
+  
+  /usertrophys:
+    get:
+      summary: 'get all user trophys for that user'
+      tags:
+        - usertrophys
+      responses:
+        200:
+          description: 'Answer submitted'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserTrophy'
+                  length:
+                    type: number
+  /usertrophys/{name}:
+    get:
+      summary: 'get single user trophys by trophy name'
+      parameters:
+      - name: name
+        required: true
+        in: path
+        schema:
+          type: string
+      tags:
+        - usertrophys
+      responses:
+        200:
+          description: 'Answer submitted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTrophy'
+
 components:
   securitySchemes:
     bearerJWT:            
@@ -866,3 +927,45 @@ components:
           readOnly: true
           default: false
           description: 'Indicate if user has read a notification via a GET request'
+    
+    Trophy:
+      type: object
+      required:
+      - identifier
+      - description
+      properties:
+        identifier:
+          type: string
+          enum: [ "CreateThreadComment", "SubmitSurveyAnswer", "ReadNotification" ]
+        description:
+          type: string
+        tiers:
+          type: array
+          items:
+            type: object
+            properties:
+              tier:
+                type: integer
+                enum: [ 0, 1, 2, 3 ]
+              description:
+                type: string
+    
+    UserTrophy:
+      type: object
+      required:
+      - trophy
+      - tier
+      - user
+      properties:
+        trophy:
+          type: string
+          enum: [ "CreateThreadComment", "SubmitSurveyAnswer", "ReadNotification" ]
+        tier:
+          type: integer
+          enum: [ 0, 1, 2, 3 ]
+        user:
+          oneOf:
+          - type: string
+            format: ObjectId
+          - $ref: '#/components/schemas/User'
+    
