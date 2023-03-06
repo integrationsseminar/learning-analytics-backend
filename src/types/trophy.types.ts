@@ -3,7 +3,7 @@ import { Document, Model } from "mongoose"
 export type TTrophy = {
     identifier: TrophyIdents
     description: string
-    tiers: {
+    availableTiers: {
         tier: TrophyTiers
         description: string
     }[]

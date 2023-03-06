@@ -20,7 +20,7 @@ router.use('/threads', ThreadRouter);
 router.use('/surveys', SurveyRouter);
 router.use('/threadcomments', ThreadCommentRouter);
 router.use('/notifications', ThreadNotificationsRouter);
-router.use('/trophy', TrophyRouter);
-router.use('/usertrophy', UserTrophyRouter);
+router.use('/trophys', TrophyRouter);
+router.use('/usertrophys', UserTrophyRouter);
 
 export default router

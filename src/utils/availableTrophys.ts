@@ -5,7 +5,7 @@ export function getAvailableTrophys(): TTrophy[] {
         {
             identifier: TrophyIdents.SubmitSurveyAnswer,
             description: "Beantworte Umfragen",
-            tiers: [{
+            availableTiers: [{
                 tier: TrophyTiers.BRONZE,
                 description: "Beantworte deine erste Umfrage"
             }]
@@ -13,7 +13,7 @@ export function getAvailableTrophys(): TTrophy[] {
         {
             identifier: TrophyIdents.ReadNotification,
             description: "Lese Beanchrichtigung",
-            tiers: [{
+            availableTiers: [{
                 tier: TrophyTiers.BRONZE,
                 description: "Lese deine erste Beanchrichtigung"
             }]
@@ -21,7 +21,7 @@ export function getAvailableTrophys(): TTrophy[] {
         {
             identifier: TrophyIdents.CreateThreadComment,
             description: "Erstelle Kommentare in Beiträgen",
-            tiers: [{
+            availableTiers: [{
                 tier: TrophyTiers.BRONZE,
                 description: "erstelle deinen ersten Kommentar"
             }]
