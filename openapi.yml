@@ -28,6 +28,8 @@ tags:
   description: 'Routes for trophys'
 - name: usertrophys
   description: 'Routes for usertrophys'
+- name: learningprogress
+  description: 'Routes for learningprogress'
   
 paths:
   /ping:
@@ -542,6 +544,50 @@ paths:
         204:
           description: 'Course deleted'
           
+   # LearningProgress Routes CRUD Controller
+  /learningprogress:
+    get:
+      tags:
+      - learningprogress
+      summary: 'Get LearningProgressEntries for the logged in user (Odatafy)'
+      description: '<b>Authorization: Bearer \<JWT\></b> must be set<br>Minimum Role: Student<br>Route is odatafy compatible, documentation and examples can be found <a href=http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_QueryOptions>here</a>'
+      security: 
+        - bearerJWT: []
+      responses:
+        200:
+          description: 'LearningProgressEntries sorted by createdAt (descending)'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: 
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LearningProgressEntry'
+                  
+                
+    post:
+      tags:
+      - learningprogress
+      summary: 'Create a new LearningProgressEntry for the logged in user'
+      description: '<b>Authorization: Bearer \<JWT\></b> must be set<br>Minimum Role: Student'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningProgressEntry'
+      responses:
+        201:
+          description: 'LearningProgressEntry created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningProgressEntry'
+          
   # Survey Routes CRUD Controller
   /surveys:
     get:
@@ -968,4 +1014,24 @@ components:
           - type: string
             format: ObjectId
           - $ref: '#/components/schemas/User'
-    
+          
+    LearningProgressEntry:
+      type: object
+      required:
+        - progressValues
+      properties:
+        user: 
+          type: string
+          format: ObjectId
+          readOnly: true
+        progressValues:
+          type: array
+          maxLength: 5
+          minLength: 5
+          example: [5,6,8,9,7]
+          items:
+            type: number
+        createdAt: 
+          type: string
+          format: Date
+          readOnly: true

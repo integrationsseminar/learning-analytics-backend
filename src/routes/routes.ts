@@ -9,6 +9,7 @@ import ThreadCommentRouter from './threadcomment/threadcomment.router';
 import ThreadNotificationsRouter from './notification/notification.router';
 import TrophyRouter from './trophy/trophy.router';
 import UserTrophyRouter from './usertrophy/usertrophy.router';
+import LearningProgressEntryRouter from './learningProgressEntry/learningProgressEntry.router'
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/threadcomments', ThreadCommentRouter);
 router.use('/notifications', ThreadNotificationsRouter);
 router.use('/trophys', TrophyRouter);
 router.use('/usertrophys', UserTrophyRouter);
+router.use('/learningprogress', LearningProgressEntryRouter)
 
 export default router
