@@ -896,6 +896,8 @@ components:
           type: string
           enum: [ 'Student', 'Lecturer', 'Admin' ]
           readOnly: true
+        university:
+          type: string
         profilePicture:
           type: string
           nullable: true
