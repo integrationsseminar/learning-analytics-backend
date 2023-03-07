@@ -9,6 +9,9 @@ import Survey from '../../models/survey.model';
 import { TCourseDocument } from '../../types/course.types';
 import Course from '../../models/course.model';
 
+import UserTrophy from "../../models/usertrophy.model";
+import { TrophyIdents, TrophyTiers } from "../../types/usertrophy.types";
+
 import { UserRoles } from '../../types/user.types';
 
 import BaseCRUDController, { CRUDControllerOptions } from '../../utils/CRUDController';
@@ -133,6 +136,15 @@ export default class SurveyController extends BaseCRUDController<TSurvey, TSurve
             { $addToSet: { answers: { user: req.user._id, answer: req.body.answer } } }, 
             { new: true }
         );
+
+        //create trophy
+        if((await Survey.count({ answers: { user: req.user._id } })) >= 1) {
+            await UserTrophy.findOneAndUpdate(
+                { trophy: TrophyIdents.SubmitSurveyAnswer, user: req.user._id },
+                { tier: TrophyTiers.BRONZE },
+                { upsert: true }
+            )
+        }
 
         res.status(204).json();
     }

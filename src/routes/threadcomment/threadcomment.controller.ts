@@ -9,6 +9,9 @@ import Utils from '../../utils/utils';
 import { HTTPBadRequestError, HTTPInternalServerError } from '../../errors/errorWithStatus';
 import Thread from '../../models/thread.model';
 
+import UserTrophy from "../../models/usertrophy.model";
+import { TrophyIdents, TrophyTiers } from "../../types/usertrophy.types";
+
 const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = {
 
     routeConfigs: {
@@ -116,7 +119,7 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
             }
         },
 
-        createPostProc: async (_req, data) => {
+        createPostProc: async (req, data) => {
             let threadComment = await ThreadComment.findOne({ _id: data._id }).populate({
                 path: 'thread',
                 populate: {
@@ -128,6 +131,15 @@ const CRUDOpts: CRUDControllerOptions<TThreadComment, TThreadCommentDocument> = 
                 throw new HTTPInternalServerError("Error in createPostProc of threadcomment controller")
             }
             await Utils.createNotification([...threadComment.thread.course.members, threadComment.thread.course.owner], `Neuer Kommentar auf einen Thread`, "Es wurde ein neuer Kommentar im Thread mem lal lol erstellt. Bitte einloggen")
+
+            if((await ThreadComment.count({ createdBy: req.user._id })) >= 1) {
+                await UserTrophy.findOneAndUpdate(
+                    { trophy: TrophyIdents.CreateThreadComment, user: req.user._id },
+                    { tier: TrophyTiers.BRONZE },
+                    { upsert: true }
+                )
+            }
+            
             return data
         },
 

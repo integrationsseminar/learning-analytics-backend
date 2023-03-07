@@ -4,6 +4,8 @@ import Notification from "../../models/notification.model";
 import { TNotification, TNotificationDocument, TNotificationModel } from "../../types/notification.types";
 import BaseCRUDController,{ CRUDControllerOptions } from "../../utils/CRUDController";
 
+import UserTrophy from "../../models/usertrophy.model";
+import { TrophyIdents, TrophyTiers } from "../../types/usertrophy.types";
 
 const CRUDOpts: CRUDControllerOptions<TNotification, TNotificationDocument> = {
     routeConfigs: {
@@ -22,9 +24,18 @@ const CRUDOpts: CRUDControllerOptions<TNotification, TNotificationDocument> = {
             await Notification.updateMany(
                 { user: req.user._id },
                 { $set: { read : true } },
-                {new: true}
-             )
-             return data;
+                { new: true }
+            )
+
+            if((await Notification.count({ read : true, user: req.user._id }))) {
+                await UserTrophy.findOneAndUpdate(
+                    { trophy: TrophyIdents.ReadNotification, user: req.user._id },
+                    { tier: TrophyTiers.BRONZE },
+                    { upsert: true }
+                )
+            }
+
+            return data;
         }
     }
 }
