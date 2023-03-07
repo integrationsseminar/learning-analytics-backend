@@ -4,7 +4,8 @@ export type TUser = {
     name: string,
     email: string,
     password: string,
-    role: UserRoles,    
+    role: UserRoles, 
+    university: string,   
     profilePicture?: string
 }
 
