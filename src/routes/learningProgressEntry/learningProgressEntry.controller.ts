@@ -3,6 +3,7 @@ import { PipelineStage } from "mongoose";
 import LearningProgressEntry from "../../models/learningProgressEntry.model";
 import { TLearningProgressEntry, TLearningProgressEntryDocument, TLearningProgressEntryModel } from "../../types/learningProgressEntry.types";
 import BaseCRUDController, { CRUDControllerOptions } from "../../utils/CRUDController";
+import Utils from "../../utils/utils";
 
 
 const CRUDOpts: CRUDControllerOptions<TLearningProgressEntry, TLearningProgressEntryDocument> = {
@@ -23,7 +24,12 @@ const CRUDOpts: CRUDControllerOptions<TLearningProgressEntry, TLearningProgressE
             return {
                 user: req.user._id
             }
-        }
+        },
+        createPostProc: async(_req, data) => {
+            //remove other entries from the same day
+            await LearningProgressEntry.deleteMany({createdAt: {$gt: Utils.roundDateToLastMidnight(data.createdAt)}, _id: {$ne: data._id}})
+            return data
+        },
     }
 }
 
