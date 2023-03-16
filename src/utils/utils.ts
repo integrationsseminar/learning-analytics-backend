@@ -32,4 +32,10 @@ export default class Utils {
         }
         await Notification.create(notifications)
     }
+
+    static roundDateToLastMidnight(date: Date) {
+        const roundedDate = new Date(date);
+        roundedDate.setHours(0,0,0,0)
+        return roundedDate;
+    }
 }
