@@ -4,6 +4,8 @@ import { ProgressTypes, TCourseDocument, TCourseModel } from "../types/course.ty
 
 const schema = new Schema<TCourseDocument>({
     name: { type: String, required: true },
+    className: { type: String, required: false },
+    universityName: { type: String, required: false },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     members: [ { type: Schema.Types.ObjectId, ref: 'User', required: true } ],
     start: { type: Date, required: true },
