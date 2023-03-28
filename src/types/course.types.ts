@@ -8,6 +8,8 @@ export enum ProgressTypes {
 export type TCourse = {
     members: TUserDocument['_id'][],
     owner: TUserDocument['_id'],
+    className: string,
+    universityName: string,
     name: string,
     start: Date,
     end: Date,
