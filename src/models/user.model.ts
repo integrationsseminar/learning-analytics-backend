@@ -4,7 +4,7 @@ import { UserRoles, TUserDocument, TUserModel } from "../types/user.types";
 
 const schema = new Schema<TUserDocument>({
   name: {type: String, required: true},
-  email: {type: String, required: true},
+  email: {type: String, required: true, immutable: true},
   university: {type: String, required: false},
   courseOfStudy: {type: String, required: false},
   semester: {type: String, required: false},
