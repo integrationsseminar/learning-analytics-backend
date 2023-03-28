@@ -8,6 +8,7 @@ export type TUser = {
     university: string,   
     courseOfStudy: string, //Studiengang
     semester: number //Semesternummer
+    industry: string //Branche
 }
 
 export enum UserRoles {
