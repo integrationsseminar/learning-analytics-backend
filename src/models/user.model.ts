@@ -6,6 +6,8 @@ const schema = new Schema<TUserDocument>({
   name: {type: String, required: true},
   email: {type: String, required: true},
   university: {type: String, required: false},
+  courseOfStudy: {type: String, required: false},
+  semester: {type: Number, required: false},
   password: {type: String, required: true, select: false},
   role: {
     type: String,
@@ -13,7 +15,6 @@ const schema = new Schema<TUserDocument>({
     immutable: true,
     required: true
   },
-  profilePicture: {type: String, required: false}
 },
   {
     toObject: {

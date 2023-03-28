@@ -898,9 +898,10 @@ components:
           readOnly: true
         university:
           type: string
-        profilePicture:
+        courseOfStudy:
           type: string
-          nullable: true
+        semester:
+          type: number
     Survey:
       type: object
       description: 'Is mapped to individual users via survey answers'

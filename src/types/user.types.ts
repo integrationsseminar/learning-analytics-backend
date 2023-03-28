@@ -6,7 +6,8 @@ export type TUser = {
     password: string,
     role: UserRoles, 
     university: string,   
-    profilePicture?: string
+    courseOfStudy: string, //Studiengang
+    semester: number //Semesternummer
 }
 
 export enum UserRoles {
