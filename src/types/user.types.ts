@@ -7,7 +7,7 @@ export type TUser = {
     role: UserRoles, 
     university: string,   
     courseOfStudy: string, //Studiengang
-    semester: number //Semesternummer
+    semester: string //Semesternummer
     industry: string //Branche
 }
 

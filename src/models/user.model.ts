@@ -7,7 +7,7 @@ const schema = new Schema<TUserDocument>({
   email: {type: String, required: true},
   university: {type: String, required: false},
   courseOfStudy: {type: String, required: false},
-  semester: {type: Number, required: false},
+  semester: {type: String, required: false},
   industry: {type: String, required: false},
   password: {type: String, required: true, select: false},
   role: {
