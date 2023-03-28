@@ -902,6 +902,8 @@ components:
           type: string
         semester:
           type: number
+        industry:
+          type: string
     Survey:
       type: object
       description: 'Is mapped to individual users via survey answers'
