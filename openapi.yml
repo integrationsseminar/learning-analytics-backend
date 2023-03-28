@@ -901,7 +901,7 @@ components:
         courseOfStudy:
           type: string
         semester:
-          type: number
+          type: string
         industry:
           type: string
     Survey:
