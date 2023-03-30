@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import router from './src/routes/routes';
 import errorMiddleware from './src/middleware/error.middleware';
 import cors from "cors"
+import adminjs from './src/utils/adminjs';
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ mongoose.connect(process.env.DB_URL as string, () => {
     console.log("Connected to MongoDB")
 });
 
+app.use("/admin", adminjs)
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -26,6 +28,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev'));
 
 app.use("/", router);
+
 
 app.use("/", (_req, res) => {
     res.status(405).send("Not implemented")
