@@ -75,7 +75,7 @@ export default AdminJSExpress.buildAuthenticatedRouter(adminJS, {
 	authenticate: (email: any, password: any) => {
 		if (
 			email == "la@gang-of-fork.de" &&
-			(<string>password).trim() == (process.env.ADMINJS_PASSWORD as string)
+			password == (process.env.ADMINJS_PASSWORD as string)
 		) {
 			return true;
 		}
