@@ -5,6 +5,7 @@ import { UserRoles } from "../../types/user.types";
 import Utils from "../../utils/utils";
 import { ErrorWithStatus } from "../../errors/errorWithStatus";
 import Course from "../../models/course.model";
+import Survey from "../../models/survey.model";
 
 export default class AuthController {
 
@@ -22,8 +23,12 @@ export default class AuthController {
                 return next(new ErrorWithStatus("Course unknown", 400))
             }
             const newUser = await User.create(userToInsert);
+            //add User to the course
             await Course.findOneAndUpdate({_id: req.params.id}, {$addToSet: {members: newUser._id}})
-            res.status(201).json(newUser);
+            //add User to all the surveys of the course
+            console.log(await Survey.find({course: req.params.id}))
+            await Survey.updateMany({course: req.params.id}, {$addToSet: {users: newUser._id}})
+            return res.status(201).json(newUser);
         } catch (e) {
             return next(e)
         }
@@ -57,8 +62,10 @@ export default class AuthController {
             if(!course) {
                 return next(new ErrorWithStatus("Course unknown", 400))
             }
-
+            //add User to the Course
             await Course.findOneAndUpdate({_id: req.params.id}, {$addToSet: {members: user._id}})
+            //add User to all the surveys of the course
+            await Survey.updateMany({course: req.params.id}, {$addToSet: {users: user._id}})
             return res.json({
                 email: user.email,
                 token: Utils.generateToken(user)
