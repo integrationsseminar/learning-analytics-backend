@@ -3,6 +3,13 @@ import * as AdminJSMongoose from "@adminjs/mongoose";
 import AdminJS from "adminjs";
 import userModel from "../models/user.model";
 import bcrypt from "bcrypt";
+import surveyModel from "../models/survey.model";
+import courseModel from "../models/course.model";
+import learningProgressEntryModel from "../models/learningProgressEntry.model";
+import notificationModel from "../models/notification.model";
+import threadModel from "../models/thread.model";
+import threadcommentModel from "../models/threadcomment.model";
+import usertrophyModel from "../models/usertrophy.model";
 
 AdminJS.registerAdapter({
 	Resource: AdminJSMongoose.Resource,
@@ -51,6 +58,13 @@ const adminOptions = {
 				},
 			},
 		},
+        {resource: surveyModel},
+        {resource: courseModel},
+        {resource: learningProgressEntryModel},
+        {resource: notificationModel},
+        {resource: threadModel},
+        {resource: threadcommentModel},
+        {resource: usertrophyModel}
 	],
 };
 
