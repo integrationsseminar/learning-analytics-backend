@@ -76,30 +76,9 @@ const CRUDOpts: CRUDControllerOptions<TThread, TThreadDocument> = {
         },
 
         deleteBaseQuery: async (req) => {
-            /*
-            let threads = await Thread.find({}).populate('course', 'members owner').select('course _id')
-            const { _id: userId } = req.user
-
-            //lecturers can only delete threads from their own courses
-            if (req.user.role == UserRoles.Lecturer) {
-                threads = threads.filter((thread) => {
-                    return thread.course.owner == userId
-                })
-            }
-
-            //extract the threadIds
-            let threadIds = threads.map((thread) => {
-                return thread._id
-            })
-            return { $and: [{ _id: { $in: threadIds } }, { _id: req.params.id }] }
-            */
-
-           //if the user is a lecturer, check if he is the owner of the course first
            if(req.user.role = UserRoles.Lecturer) {
                 const thread = await Thread.findOne({_id: req.params.id}).populate<{course: TCourseDocument}>('course')
                 if(!thread) throw new ErrorWithStatus("Thread not found", 404)
-                console.log(thread.course.owner)
-                console.log(req.user._id)
                 if(!thread.course.owner.equals(req.user._id)) throw new ErrorWithStatus("You may only delete your threads from your own course", 403) 
            } 
            return [{}]
